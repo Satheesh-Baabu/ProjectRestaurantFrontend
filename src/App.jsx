@@ -31,7 +31,7 @@ function App() {
       <div className="">
         <Routes>
           <Route path="/" element={<LandingPage/>} />
-          <Route path="*" element={<Navigate to="/unauthorized" />} />
+          <Route path="*" element={<Navigate to="/" />} />
           <Route path="/addfood" element={<AddFood />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/register" element={<Register />} />

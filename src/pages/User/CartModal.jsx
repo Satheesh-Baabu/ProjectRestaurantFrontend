@@ -9,6 +9,7 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
   const [dineOption, setDineOption] = useState("Dine-in");
   const [tableNumber, setTableNumber] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("Online");
+  const [cartId,setCartId]=useState();
 
   useEffect(() => {
     const total = cart.reduce((sum, item) => sum + item.foodId.price * item.quantity, 0);
@@ -65,11 +66,12 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
         payment_method:paymentMethod
       };
       console.log(orderData)
+      console.log(cart)
       await axios.post("http://localhost:5000/orders", orderData); //clear cart data
       setCart([])
 
       if (paymentMethod === "Online") {
-        navigate("/payment", { state: { userId: user.id } });
+        navigate("/payment", { state: { userId: user.id}});
       } else {
         await axios.delete(`http://localhost:5000/cart/clear/${user.id}`);
         navigate("/profile/orders");

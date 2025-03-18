@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+
+  
+@theme {
+    --color-bgcolor: #FFC107;
+    --color-hovercolor:#ffc107e3;
+}

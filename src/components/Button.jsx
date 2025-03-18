@@ -2,7 +2,7 @@ const Button = ({ text, onClick }) => {
     return (
       <button
         onClick={onClick}
-        className="w-full bg-orange-600 text-white p-2 rounded-lg hover:bg-orange-500 transition"
+        className="w-full bg-[#FFC107] text-white p-2 rounded-lg cursor-pointer hover:bg-[#ffc107e3] transition"
       >
         {text}
       </button>

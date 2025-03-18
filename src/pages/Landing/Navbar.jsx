@@ -14,7 +14,7 @@ const Navbar = ({ showOffer }) => {
           alt="Logo"
           className="w-10 h-10 object-cover rounded-full border-2 border-white" // Reduced size on small screens
         />
-        <span className="text-lg md:text-xl font-bold text-white drop-shadow-md">MSV Restaurant</span>
+        <span className="text-lg md:text-xl font-bold text-white drop-shadow-md text-center">MSV Restaurant</span>
       </div>
 
       {/* Special Offer - Visible only on large screens */}
@@ -26,11 +26,20 @@ const Navbar = ({ showOffer }) => {
       )}
 
       {/* Login Button */}
-      <Link to={"/login"}>
-      <Button className="bg-white/20 text-white px-3 py-1 md:px-4 md:py-2 rounded border border-white/30 
-                         hover:bg-white hover:text-black transition duration-300 ease-in-out text-sm md:text-base">
-        Login
-      </Button></Link>
+      <div className="flex gap-3">
+        <Link to={"/login"}>
+          <Button className=" text-white px-3 py-1 md:px-4 md:py-2 rounded border border-white/30 
+                             hover:bg-white hover:text-black transition duration-300 ease-in-out text-sm md:text-base">
+            Login
+          </Button>
+        </Link>
+        <Link to={"/register"}>
+          <Button className="text-white px-3 py-1 md:px-4 md:py-2 rounded border border-white/30 
+                             hover:bg-white hover:text-black transition duration-300 ease-in-out text-sm md:text-base">
+            Register
+          </Button>
+        </Link>
+      </div>
     </nav>
   );
 };

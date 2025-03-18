@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/unauthorized" />;
   }
 
   try {
