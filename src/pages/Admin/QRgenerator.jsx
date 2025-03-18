@@ -98,7 +98,7 @@ import QRCode from "qrcode";
 import axios from "axios";
 
 const QRgenerator = () => {
-  const baseURL = "https://msvrestaurant.netlify.app/";
+  const baseURL = "https://msvrestaurant.vercel.app/";
   const [qrText, setQrText] = useState(baseURL);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [message, setMessage] = useState("");

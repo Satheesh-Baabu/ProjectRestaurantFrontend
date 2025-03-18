@@ -5,7 +5,8 @@ import FoodSection from "./FoodSection";
 import Contact from "./Contact";
 import Footer from "./Footer";
 import Testimonials from "./Testimonials";
-
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const foodItems = {
   "Non-Veg": [
@@ -31,6 +32,19 @@ const foodItems = {
 };
 
 function Landing() {
+
+  const [searchParams] = useSearchParams();
+  const tableNumber = searchParams.get("table");
+
+  useEffect(() => {
+    if (tableNumber) {
+      localStorage.setItem("tableNumber", tableNumber); // Save to localStorage
+    }
+  }, [tableNumber]);
+  function displayAlert(){
+    const tableNumber = localStorage.getItem("tableNumber");
+    alert(`Your table number is:${tableNumber}`);
+  }
   return (
     <div className="min-h-screen bg-[#FDF8F5] text-[#2C2C2C] overflow-hidden">
       {/* <Navbar /> */}
@@ -52,6 +66,7 @@ function Landing() {
       <Testimonials />
       <Contact />
       <Footer />
+      <button onClick={displayAlert}>Click</button>
     </div>
   );
 }
