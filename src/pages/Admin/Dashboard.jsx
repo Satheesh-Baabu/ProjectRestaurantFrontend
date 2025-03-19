@@ -10,6 +10,7 @@ import UsersComponent from './Users';
 import AddUsers from './AddUsers';
 import axios from 'axios';
 import Orders from './Orders';
+import { getCountURL } from '../../services/api';
 
 function DashboardContent({ cards, values }) {
   const icons = [<User size={30} />, <ShoppingCart size={30} />, <ChefHat size={30} />, <Truck size={30} />];
@@ -69,7 +70,7 @@ function Dashboard() {
 
   useEffect(() => {
     async function getCount() {
-      const res = await axios.get('http://localhost:5000/get-count');
+      const res = await getCountURL();
       setCount(res.data);
     }
     getCount();

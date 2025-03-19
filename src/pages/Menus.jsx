@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Button  from "../components/Button";
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
 
 const Menus = () => {
   const [foodData, setFoodData] = useState([]);
@@ -8,7 +10,7 @@ const Menus = () => {
   const typeRefs = useRef({});
 
   useEffect(() => {
-    axios.get("http://localhost:5000/foodlist")
+    axios.get(`${API_BASE_URL}/foodlist`)
       .then((response) => {
         setFoodData(response.data);
         console.log(response.data)

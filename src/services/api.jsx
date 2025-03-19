@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000";
+export const API_BASE_URL = "http://localhost:5000";
 
 export const register = async (userData) => {
   return axios.post(`${API_BASE_URL}/api/auth/register`, userData);
@@ -20,4 +20,20 @@ export const resetPassword = async (data) => {
 
 export const getFood=async()=>{
   return axios.get(`http://locolhost:8000/menulist`);
+}
+
+export const addFood=async(data)=>{
+  return axios.post(`${API_BASE_URL}/addfood`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}
+
+export const addUser=async(formData)=>{
+  return axios.post(`${API_BASE_URL}/add-users`, formData)
+}
+
+export const getCountURL=async()=>{
+  return axios.get(`${API_BASE_URL}/get-count`);
 }

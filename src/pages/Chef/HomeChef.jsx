@@ -5,6 +5,7 @@ import { isAuthenticated,getUser } from '../../utils/ProtectedRoute';
 import axios from 'axios';
 import Button from '../../components/Button';
 import { io } from "socket.io-client";
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 
 function HomeChef() {
@@ -13,7 +14,7 @@ function HomeChef() {
     const navigate = useNavigate();
     const [change,setChange]=useState(false);
 
-    const socket = io("http://localhost:5000"); 
+    const socket = io(API_BASE_URL); 
 
     useEffect(() => {
         if (!isAuthenticated()) {
@@ -29,7 +30,7 @@ function HomeChef() {
 
         const fetchOrders = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/chef-orders`);
+                const response = await axios.get(`${API_BASE_URL}/chef-orders`);
                 setOrders(response.data.orders || []); 
                 console.log(response.data.orders)
 
@@ -51,7 +52,7 @@ function HomeChef() {
     
     const updateStatus = async (order) => {
       try {
-          const res = await axios.put(`http://localhost:5000/update-status/${order._id}`, {
+          const res = await axios.put(`${API_BASE_URL}/update-status/${order._id}`, {
               order_status: order.order_status
           });
           alert(res.data.message);

@@ -26,13 +26,13 @@ import Payment from "./pages/User/Payment";
 import ChefDashboard from "./pages/Chef/ChefDashboard";
 
 function App() {
-  
+
   return (
     <Router>
       <div className="">
         <Routes>
           <Route path="/" element={<LandingPage/>} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/unauthorized" />} />
           <Route path="/addfood" element={<AddFood />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/register" element={<Register />} />

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
   const navigate = useNavigate();
   const [totalPrice, setTotalPrice] = useState(0);
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [dineOption, setDineOption] = useState("Dine-in");
-  const [tableNumber, setTableNumber] = useState(1);
+  const [tableNumber, setTableNumber] = useState();
   const [paymentMethod, setPaymentMethod] = useState("Online");
-  const [cartId,setCartId]=useState();
-
   useEffect(() => {
     const total = cart.reduce((sum, item) => sum + item.foodId.price * item.quantity, 0);
     setTotalPrice(total);
+    setTableNumber(localStorage.getItem("tableNumber")|| 1);  
   }, [cart]);
 
   const handleQuantityChange = async (foodId, delta) => {
@@ -24,13 +24,13 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
       const newQuantity = item.quantity + delta;
       if (newQuantity < 1) return;
 
-      await axios.put("http://localhost:5000/cart/update", {
+      await axios.put(`${API_BASE_URL}/cart/update`, {
         userId: user.id,
         foodId,
         quantity: newQuantity,
       });
 
-      const response = await axios.get(`http://localhost:5000/cart/${user.id}`);
+      const response = await axios.get(`${API_BASE_URL}/cart/${user.id}`);
       setCart(response.data.items || []);
     } catch (error) {
       console.error("Error updating quantity:", error);
@@ -67,13 +67,13 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
       };
       console.log(orderData)
       console.log(cart)
-      await axios.post("http://localhost:5000/orders", orderData); //clear cart data
+      await axios.post(`${API_BASE_URL}/orders`, orderData); //clear cart data
       setCart([])
 
       if (paymentMethod === "Online") {
         navigate("/payment", { state: { userId: user.id}});
       } else {
-        await axios.delete(`http://localhost:5000/cart/clear/${user.id}`);
+        await axios.delete(`${API_BASE_URL}/cart/clear/${user.id}`);
         navigate("/profile/orders");
       }
     } catch (error) {
@@ -157,15 +157,9 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
             {dineOption === "Dine-in" && (
               <>
                 <label className="block mb-2">Table Number:</label>
-                <select
-                  className="w-full p-2 border rounded mb-4"
-                  value={tableNumber}
-                  onChange={(e) => setTableNumber(Number(e.target.value))}
-                >
-                  {[1, 2, 3, 4, 5, 6].map((num) => (
-                    <option key={num} value={num}>{num}</option>
-                  ))}
-                </select>
+                <label
+                  className="w-full p-2 border rounded mb-4">{tableNumber} 
+                </label>
               </>
             )}
 

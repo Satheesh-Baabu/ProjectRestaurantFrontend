@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { getUser, isAuthenticated } from "../../utils/ProtectedRoute";
 import { useNavigate } from "react-router-dom";
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 function Orders() {
     const [orders, setOrders] = useState([]);
@@ -22,7 +23,7 @@ function Orders() {
 
         const fetchOrders = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/orders/${user.id}`);
+                const response = await axios.get(`${API_BASE_URL}/orders/${user.id}`);
                 setOrders(response.data.orders);
             } catch (error) {
                 console.error("Error fetching orders:", error);

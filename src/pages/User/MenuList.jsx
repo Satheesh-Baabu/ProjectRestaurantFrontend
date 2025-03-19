@@ -4,6 +4,7 @@ import CartModal from "./CartModal";
 import Button from "../../components/Button";
 import { getUser, isAuthenticated } from "../../utils/ProtectedRoute";
 import { useNavigate } from "react-router-dom";
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 const FoodList = () => {
   const [foodData, setFoodData] = useState([]);
@@ -30,7 +31,7 @@ const FoodList = () => {
   // ✅ Fetch Food Data
   useEffect(() => {
     axios
-      .get("http://localhost:5000/foodlist")
+      .get(`${API_BASE_URL}/foodlist`)
       .then((response) => {
         setFoodData(response.data);
         setQuantities(
@@ -49,7 +50,7 @@ const FoodList = () => {
   useEffect(() => {
     if (user) {
       axios
-        .get(`http://localhost:5000/cart/${user.id}`)
+        .get(`${API_BASE_URL}/cart/${user.id}`)
         .then((response) => {
           setCart(response.data.items || []);
         })
@@ -71,7 +72,7 @@ const FoodList = () => {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/cart/add", {
+      const response = await axios.post(`${API_BASE_URL}/cart/add`, {
         userId: user.id,
         foodId: food._id,
         quantity: quantities[food._id],
@@ -86,7 +87,7 @@ const FoodList = () => {
   // ✅ Remove item from cart
   const handleRemoveFromCart = async (foodId) => {
     try {
-      const response = await axios.post("http://localhost:5000/cart/remove", {
+      const response = await axios.post(`${API_BASE_URL}/cart/remove`, {
         userId: user.id,
         foodId,
       });

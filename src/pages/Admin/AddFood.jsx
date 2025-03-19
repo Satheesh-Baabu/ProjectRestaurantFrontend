@@ -1,14 +1,17 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { addFood } from '../../services/api';
 
 function AddFood() {
   const [formData, setFormData] = useState({
     foodname: '',
-    vornv:'',
+    vornv: '',
     foodtype: '',
     price: '',
     file: null,
   });
+
+  const fileInputRef = useRef(null); // Reference for file input
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,33 +32,43 @@ function AddFood() {
     data.append('file', formData.file);
 
     try {
-      const response = await axios.post('http://localhost:5000/addfood', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await addFood(data);
       console.log('Food added successfully:', response.data);
-      alert("Food added successfully")
+      alert("Food added successfully");
+
+      // Reset the form fields
+      setFormData({
+        foodname: '',
+        vornv: '',
+        foodtype: '',
+        price: '',
+        file: null,
+      });
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""; // Reset file input manually
+      }
+
     } catch (error) {
       console.error('Error adding food:', error);
-      alert("food Not added")
+      alert("Food not added");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className='flex flex-col bg '>
       <label>Food Name:</label>
-      <input type="text" name="foodname" onChange={handleChange} required  className='border'/>
+      <input type="text" name="foodname" value={formData.foodname} onChange={handleChange} required className='border' />
 
       <label>Veg/Non-Veg</label>
-      <select name="vornv" onChange={handleChange} required className='border'>
+      <select name="vornv" value={formData.vornv} onChange={handleChange} required className='border'>
         <option value="">--Select--</option>
         <option value="Veg">Veg</option>
         <option value="Nonveg">Non-Veg</option>
       </select>
 
       <label>Food Type:</label>
-      <select name="foodtype" onChange={handleChange} required className='border'>
+      <select name="foodtype" value={formData.foodtype} onChange={handleChange} required className='border'>
         <option value="">--Select--</option>
         <option value="Meals">Meals</option>
         <option value="Briyani">Briyani</option>
@@ -69,12 +82,12 @@ function AddFood() {
       </select>
 
       <label>Price:</label>
-      <input type="number" name="price" onChange={handleChange} required className='border'/>
+      <input type="number" name="price" value={formData.price} onChange={handleChange} required className='border' />
 
       <label>File:</label>
-      <input type="file" name="file" onChange={handleFileChange} required className='border border-black' />
+      <input type="file" name="file" ref={fileInputRef} onChange={handleFileChange} required className='border border-black' />
 
-      <button type="submit" className='border rounded-xl bg-orange-500 p-1 text-white  hover:bg-orange-400 cursor-pointer'>Add Food</button>
+      <button type="submit" className='border rounded-xl bg-orange-500 p-1 text-white hover:bg-orange-400 cursor-pointer'>Add Food</button>
     </form>
   );
 }

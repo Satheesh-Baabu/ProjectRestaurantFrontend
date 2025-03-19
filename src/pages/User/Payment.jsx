@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
 
 function Payment() {
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ function Payment() {
   
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/cart/${userId}`)
+      .get(`${API_BASE_URL}/cart/${userId}`)
       .then((response) => {
         setCart(response.data);
         console.log("Cart Data:", response.data);
@@ -20,7 +22,7 @@ function Payment() {
 
   const handlePayment = async () => {
     try {
-      const { data } = await axios.post("http://localhost:5000/payment", { userId });
+      const { data } = await axios.post(`${API_BASE_URL}/payment`, { userId });
 
       console.log("Payment response:", data);
       console.log("Order ID from backend:", data.data.id);  
@@ -33,7 +35,7 @@ function Payment() {
         description: "Order Payment",
         order_id: data.data.id,
         handler: async (response) => {
-          const verifyRes = await axios.post("http://localhost:5000/payment/verify", {
+          const verifyRes = await axios.post(`${API_BASE_URL}/payment/verify`, {
             ...response,
             userId,
             cartId: data.cart.cartId, 

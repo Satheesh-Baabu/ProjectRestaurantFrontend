@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -9,7 +11,7 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("http://localhost:5000/admin-orders"); // Replace with actual API
+        const response = await fetch(`${API_BASE_URL}/admin-orders`); // Replace with actual API
         const data = await response.json();
         setOrders(data.orders);
         filterOrders(data.orders, paymentFilter, selectedDate);

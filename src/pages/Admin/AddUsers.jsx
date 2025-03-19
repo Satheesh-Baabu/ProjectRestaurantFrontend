@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { addUser } from "../../services/api";
 
 const AddUser = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const AddUser = () => {
     setMessage("");
 
     try {
-      const response = await axios.post("http://localhost:5000/add-users", formData);
+      const response = await addUser(formData);
       setMessage(response.data.message);
       alert("User added successfully!");
       navigate("/dashboard/users"); 
