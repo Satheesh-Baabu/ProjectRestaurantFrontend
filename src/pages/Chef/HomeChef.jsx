@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { isAuthenticated,getUser } from '../../utils/ProtectedRoute';
 import axios from 'axios';
 import Button from '../../components/Button';
-import { io } from "socket.io-client";
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
-
+import socket from "../../utils/socket"; // ✅ Use shared socket
 
 function HomeChef() {
     const [orders, setOrders] = useState([]);
@@ -14,7 +13,6 @@ function HomeChef() {
     const navigate = useNavigate();
     const [change,setChange]=useState(false);
 
-    const socket = io(API_BASE_URL); 
 
     useEffect(() => {
         if (!isAuthenticated()) {
@@ -31,23 +29,25 @@ function HomeChef() {
         const fetchOrders = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/chef-orders`);
-                setOrders(response.data.orders || []); 
-                console.log(response.data.orders)
-
+                setOrders(response.data.orders || []);
             } catch (error) {
-                setOrders(null)
                 console.error("Error fetching orders:", error);
+                setOrders([]);
             }
         };
-        fetchOrders();
-        socket.on("new_order", (newOrder) => {
-          // setOrders((prevOrders) => [...prevOrders, newOrder]); // Add new order to the list
-          fetchOrders();
-        });
 
-      return () => {
-          socket.off("new_order");
-      };
+        fetchOrders();
+
+        // Listen for new orders in real-time
+        const handleNewOrder = () => {
+            fetchOrders();
+        };
+
+        socket.on("new_order", handleNewOrder);
+        
+        return () => {
+            socket.off("new_order", handleNewOrder);
+        };
     }, [user,change]);
     
     const updateStatus = async (order) => {

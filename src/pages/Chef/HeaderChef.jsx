@@ -16,8 +16,8 @@ function HeaderChef({ toggleSidebar ,title}) {
         >
           Menu
         </button>
-        <button onClick={handleLogout} className="block px-4 py-1 text-left text-white bg-orange-500 hover:bg-orange-600">Logout</button>
+        <button onClick={handleLogout} className="block px-4 py-1 text-left cursor-pointer text-white bg-red-500 hover:bg-red-600">Logout</button>
       </header>
     );
   }
-export default HeaderChef
+export default HeaderChef 

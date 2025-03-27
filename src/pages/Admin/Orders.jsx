@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import socket from "../../utils/socket"; // ✅ Use shared socket
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 
@@ -21,6 +22,18 @@ const Orders = () => {
     };
 
     fetchOrders();
+    const handleNewOrder = () => {
+      fetchOrders();
+    };
+    socket.on("new_order", handleNewOrder);
+    socket.on("new_supplier_order", handleNewOrder);
+    socket.on("new_supplier_updates",handleNewOrder)
+    return () => {
+        socket.off("new_order", handleNewOrder);
+        socket.off("new_supplier_order", handleNewOrder);
+          socket.off("new_supplier_order",handleNewOrder)
+        
+    };
   }, []);
 
   useEffect(() => {

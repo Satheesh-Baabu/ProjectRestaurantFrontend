@@ -4,9 +4,12 @@ import CartModal from "./CartModal";
 import Button from "../../components/Button";
 import { getUser, isAuthenticated } from "../../utils/ProtectedRoute";
 import { useNavigate } from "react-router-dom";
-const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { motion, AnimatePresence } from "framer-motion";
+
 
 const FoodList = () => {
+  // ... (keep all your existing state declarations)
   const [foodData, setFoodData] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [cart, setCart] = useState([]);
@@ -17,6 +20,8 @@ const FoodList = () => {
   const [openType, setOpenType] = useState("");
   const navigate = useNavigate();
   const typeRefs = useRef({});
+  const [addingToCart, setAddingToCart] = useState(null);
+
 
   // ✅ Fetch User Data
   useEffect(() => {
@@ -56,7 +61,7 @@ const FoodList = () => {
         })
         .catch((error) => console.error("Error fetching cart data:", error));
     }
-  }, [isCartOpen, change]);
+  }, [isCartOpen, change,user]);
 
   // ✅ Update quantity in menu
   const handleQuantityChange = (id, delta) => {
@@ -66,11 +71,23 @@ const FoodList = () => {
     }));
   };
 
+  useEffect(() => {
+    if (openType && typeRefs.current[openType]) {
+      typeRefs.current[openType].scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }, [openType]);
+
+  // ... (keep all your existing useEffect hooks and handler functions)
+
   const handleAddToCart = async (food) => {
     if (!user) {
       alert("You must be logged in to add items to the cart.");
       return;
     }
+    setAddingToCart(food._id);
     try {
       const response = await axios.post(`${API_BASE_URL}/cart/add`, {
         userId: user.id,
@@ -78,9 +95,12 @@ const FoodList = () => {
         quantity: quantities[food._id],
       });
       setCart(response.data.items);
-      alert("Added successfully!");
+      setTimeout(() => {
+        setAddingToCart(null);
+      }, 1000);
     } catch (error) {
       console.error("Error adding to cart:", error);
+      setAddingToCart(null);
     }
   };
 
@@ -99,71 +119,145 @@ const FoodList = () => {
   };
 
   return (
-    <div className="bg-gray-100 p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Menu List</h1>
-
-      {/* ✅ Food Type Filter */}
-      <select
-        className="w-full p-2 mb-4 border rounded-lg"
-        onChange={(e) => setOpenType(e.target.value)}
-        defaultValue=""
-      >
-        <option value="">Select Food Type</option>
-        {foodTypes.map((type) => (
-          <option key={type} value={type}>{type}</option>
-        ))}
-      </select>
-
-      {/* ✅ Food List Grouped by Type */}
-      <div className={`w-full space-y-3 ${isCartOpen ? "opacity-30" : ""}`}>
-        {foodTypes.map((type) => (
-          <div key={type} ref={(el) => (typeRefs.current[type] = el)}>
-            <h2
-              className="bg-orange-500 text-lg font-semibold p-3 rounded-lg cursor-pointer"
-              onClick={() => setOpenType(type)}
+    <div className="min-h-screen bg-gradient-to-b from-[#fff8e1] to-gray-100 p-4 pb-20 ">
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto mt-20">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-[#ffc107e3]">Our Delicious Menu</h1>
+          <div className="relative">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {type} - ({foodData.filter(item => item.foodtype === type && item.active === 1).length})
-            </h2>
-
-            {openType === type && (
-              <div className="space-y-2">
-                {foodData
-                  .filter(item => item.foodtype === type && item.active === 1)
-                  .map((food) => (
-                    <div key={food._id} className="bg-gray-300 p-3 rounded-lg shadow">
-
-                      <div className="flex items-center justify-between">
-                        <img
-                          src={`http://localhost:5000/${food.filename}`}
-                          alt={food.foodname}
-                          width={50}
-                          height={50}
-                          className="rounded-xl"
-                        />
-                        <div>
-                          <h2 className="font-semibold">{food.foodname}</h2>
-                          <p className="text-sm text-gray-500">₹{food.price}</p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Button text="-" onClick={() => handleQuantityChange(food._id, -1)} />
-                          <span>{quantities[food._id]}</span>
-                          <Button text="+" onClick={() => handleQuantityChange(food._id, 1)} />
-                          <Button text="🛒" className="bg-green-500 text-white" onClick={() => handleAddToCart(food)} />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
+              <Button 
+                text={`🛒 Cart (${cart.length})`} 
+                onClick={() => setIsCartOpen(true)}
+                className="bg-[#ffc107e3] hover:bg-[#ffca28] text-white font-bold py-2 px-4 rounded-full shadow-lg transition-all"
+              />
+            </motion.div>
+            {cart.length > 0 && (
+              <motion.span 
+                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              >
+                {cart.length}
+              </motion.span>
             )}
           </div>
-        ))}
+        </div>
+
+        {/* Food Type Filter */}
+        <div className="mb-8">
+          <select
+            className="w-full p-3 mb-4 border-2 border-[#ffc107e3] rounded-xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-[#ffc107e3]"
+            onChange={(e) => setOpenType(e.target.value)}
+            value={openType}
+          >
+            <option value="">All Categories</option>
+            {foodTypes.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Food List Grouped by Type */}
+        <div className={`space-y-6 ${isCartOpen ? "opacity-30" : ""}`}>
+          {foodTypes.map((type) => (
+            <div 
+              key={type} 
+              ref={(el) => (typeRefs.current[type] = el)} 
+              className="mb-8"
+            >
+              <motion.h2
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-gradient-to-r from-[#ffc107e3] to-[#ffd54f] text-white text-xl font-bold p-4 rounded-xl shadow-lg cursor-pointer flex justify-between items-center"
+                onClick={() => setOpenType(type === openType ? "" : type)}
+              >
+                <span>{type}</span>
+                <span className="bg-white text-[#ffc107e3] rounded-full px-3 py-1 text-sm">
+                  {foodData.filter(item => item.foodtype === type && item.active === 1).length} items
+                </span>
+              </motion.h2>
+
+              <AnimatePresence>
+                {openType === type && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      {foodData
+                        .filter(item => item.foodtype === type && item.active === 1)
+                        .map((food) => (
+                          <motion.div 
+                            key={food._id} 
+                            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
+                            whileHover={{ y: -5 }}
+                            layout
+                          >
+                            <div className="flex h-full">
+                              <div className="w-1/3 flex-shrink-0">
+                                <img
+                                  src={`http://localhost:5000/${food.filename}`}
+                                  alt={food.foodname}
+                                  className="w-full h-32 object-cover"
+                                />
+                              </div>
+                              <div className="w-2/3 p-4 flex flex-col">
+                                <div className="flex-grow">
+                                  <h3 className="font-bold text-lg text-gray-800">{food.foodname}</h3>
+                                  <p className="text-[#ffc107e3] font-semibold">₹{food.price}</p>
+                                </div>
+                                <div className="mt-4 flex items-center justify-between">
+                                  <div className="flex items-center space-x-2">
+                                    <Button 
+                                      text="-" 
+                                      onClick={() => handleQuantityChange(food._id, -1)}
+                                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1 px-3 rounded-full"
+                                    />
+                                    <span className="font-medium w-6 text-center">{quantities[food._id]}</span>
+                                    <Button 
+                                      text="+" 
+                                      onClick={() => handleQuantityChange(food._id, 1)}
+                                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1 px-3 rounded-full"
+                                    />
+                                  </div>
+                                  <motion.div
+                                    animate={addingToCart === food._id ? {
+                                      scale: [1, 1.1, 1],
+                                      transition: { duration: 0.5 }
+                                    } : {}}
+                                  >
+                                    <Button 
+                                      text={addingToCart === food._id ? "✓ Added" : "Add to Cart"}
+                                      onClick={() => handleAddToCart(food)}
+                                      className={`bg-[#ffc107e3] hover:bg-[#ffca28] text-white font-medium py-1 px-4 rounded-full text-sm min-w-[100px] ${
+                                        addingToCart === food._id ? "bg-green-500 hover:bg-green-600" : ""
+                                      }`}
+                                    />
+                                  </motion.div>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* ✅ Fixed Cart Button */}
-      <div className="fixed bottom-4 right-4">
-        <Button text="🛒 Cart" onClick={() => setIsCartOpen(true)} />
-      </div>
-
+      {/* Cart Modal */}
       {isCartOpen && (
         <CartModal
           cart={cart}

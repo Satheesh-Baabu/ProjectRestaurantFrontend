@@ -1,16 +1,41 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getUser, isAuthenticated } from "../../utils/ProtectedRoute";
+
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
-const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
+const CartHome = () => {
   const navigate = useNavigate();
   const [totalPrice, setTotalPrice] = useState(0);
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [dineOption, setDineOption] = useState("Dine-in");
   const [tableNumber, setTableNumber] = useState();
   const [paymentMethod, setPaymentMethod] = useState("Online");
+  const [change, setChange] = useState(false);
+  const [user, setUser] = useState(null); 
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      alert("Session expired! Please log in again.");
+      navigate("/");
+    } else {
+      setUser(getUser());
+    }
+  }, [navigate]);
   
+  useEffect(() => {
+    if (user) {
+      axios
+        .get(`${API_BASE_URL}/cart/${user.id}`)
+        .then((response) => {
+          setCart(response.data.items || []);
+          console.log(response.data.items)
+        })
+        .catch((error) => console.error("Error fetching cart data:", error));
+    }
+  }, [change,user]);
   useEffect(() => {
     const total = cart.reduce((sum, item) => sum + item.foodId.price * item.quantity, 0);
     setTotalPrice(total);
@@ -22,13 +47,25 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
     if (!isNaN(storedTableNumber) && storedTableNumber !== null) {
         setTableNumber(Number(storedTableNumber));  
     } else if (storedTableNumber === "takeaway") {
-        setDineOption("Takeaway"); // Automatically set Dine Option to Takeaway
+        setDineOption("Takeaway"); 
     } else {
-        setTableNumber(1); // Default to table 1 if invalid
+        setTableNumber(1); 
     }
-}, []);
+  }, []);
+  
 
-
+  const handleRemoveFromCart = async (foodId) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/cart/remove`, {
+        userId: user.id,
+        foodId,
+      });
+      setCart(response.data.items);
+      setChange((prev) => !prev);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
+  };
  
   const handleQuantityChange = async (foodId, delta) => {
     try {
@@ -93,6 +130,10 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
     } catch (error) {
       console.error("Error placing order:", error);
     }
+  };
+  const closeCart = () => {
+    setShowOrderForm(false);  // If it's only for order form
+    // If closing the cart itself, manage it in parent state
   };
 
   return (
@@ -203,7 +244,7 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
           </>
         )}
 
-        <button className="mt-4 w-full bg-red-500 text-white p-2 rounded" onClick={onClose}>
+        <button className="mt-4 w-full bg-red-500 text-white p-2 rounded"onClick={closeCart} >
           Close
         </button>
       </div>
@@ -211,4 +252,4 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
   );
 };
 
-export default CartModal;
+export default CartHome;

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const API_BASE_URL = "https://projectrestaurantbackend.onrender.com";
+// export const API_BASE_URL = "https://projectrestaurantbackend.onrender.com";
+export const API_BASE_URL = "http://localhost:5000";
 
 export const register = async (userData) => {
   return axios.post(`${API_BASE_URL}/api/auth/register`, userData);
@@ -19,7 +20,7 @@ export const resetPassword = async (data) => {
 };
 
 export const getFood=async()=>{
-  return axios.get(`http://locolhost:8000/menulist`);
+  return axios.get(`${API_BASE_URL}/menulist`);
 }
 
 export const addFood=async(data)=>{

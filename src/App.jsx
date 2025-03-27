@@ -20,10 +20,10 @@ import Unauthorized from "./utils/Unauthorized";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Orders from "./pages/User/Orders"
 import LandingPage from "./pages/Landing/Landing";
-// import SupplierDashboard from "./pages/Supplier/SupplierDashboard"
 import HomeSupplier from "./pages/Supplier/HomeSupplier"
 import Payment from "./pages/User/Payment";
 import ChefDashboard from "./pages/Chef/ChefDashboard";
+import CartHome from "./pages/User/CartHome";
 
 function App() {
 
@@ -51,6 +51,7 @@ function App() {
           </Route>
           <Route path="/profile" element={<ProtectedRoute allowedRoles={["user"]}><Profile /></ProtectedRoute>} >
             <Route path="menulist" element={<MenuList/>}/>
+            <Route path="cart" element={<CartHome/>}/>
             <Route path="orders" element={<Orders/>}/> 
           </Route>
           <Route path="/payment" element={<Payment/>}/> 
