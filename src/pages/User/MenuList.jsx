@@ -205,7 +205,7 @@ const FoodList = () => {
                             <div className="flex h-full">
                               <div className="w-1/3 flex-shrink-0">
                                 <img
-                                  src={`http://localhost:5000/${food.filename}`}
+                                  src={`${API_BASE_URL}/${food.filename}`}
                                   alt={food.foodname}
                                   className="w-full h-32 object-cover"
                                 />
