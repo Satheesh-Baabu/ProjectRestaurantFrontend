@@ -70,7 +70,7 @@ const QRgenerator = () => {
         />
         <button
           onClick={generateAndUploadQRCode}
-          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-400 transition"
+          className="px-4 py-2 bg-bgcolor text-white rounded hover:bg-hovercolor transition"
         >
           Generate & Upload QR Code
         </button>

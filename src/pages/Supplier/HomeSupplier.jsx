@@ -148,6 +148,7 @@ function HomeSupplier() {
         try {
           const response = await axios.get(`${API_BASE_URL}/supplier-orders`);
           setOrders(response.data.orders || []);
+          console.log(response.data.orders)
         } catch (error) {
           console.error("Error fetching orders:", error);
         }
@@ -181,6 +182,16 @@ function HomeSupplier() {
         console.error("Error updating order:", error);
       }
     };
+    const updatePaymentStatus=async(order)=>{
+      try{
+        const res=await axios.put(`${API_BASE_URL}/supplier-payment-updates/${order._id}`,{order_paymentstatus:order.payment_status})
+        alert(res.data.message)
+        setChange((pre) => !pre);
+      }
+      catch(error){
+        console.error("Error updating payment status:",error);
+      }
+    }
     
     const handleLogout = () => {
       sessionStorage.removeItem("token");
@@ -202,7 +213,9 @@ function HomeSupplier() {
                 <th className="border p-3">Table No.</th>
                 <th className="border p-3">Food Items</th>
                 <th className="border p-3">Status</th>
+                <th className="border p-3">Payment</th>
                 <th className="border p-3">Date & Time</th>
+                <th className="border p-3">Change Payment</th>
               </tr>
             </thead>
             <tbody>
@@ -223,13 +236,22 @@ function HomeSupplier() {
                         {order.order_status}
                       </span>
                       <button
-                        className="ml-3 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        className="ml-3 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
                         onClick={() => updateStatus(order)}
                       >
                         Change
                       </button>
                     </td>
+                    <td className="p-3">{order.payment_status}</td>
                     <td className="p-3">{new Date(order.created_at).toLocaleString()}</td>
+                    {order.payment_status==="Pending" ?(<td className="p-3">
+                      <button
+                        className="ml-3 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
+                        onClick={() => updatePaymentStatus(order)}
+                      >
+                        Pay
+                      </button>
+                    </td>):(<td className="p-3">NA</td>)}
                   </tr>
                 ))
               ) : (

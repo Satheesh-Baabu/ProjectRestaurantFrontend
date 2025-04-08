@@ -132,8 +132,8 @@ const CartHome = () => {
     }
   };
   const closeCart = () => {
-    setShowOrderForm(false);  // If it's only for order form
-    // If closing the cart itself, manage it in parent state
+    setShowOrderForm(false);  
+    navigate(-1)
   };
 
   return (
@@ -155,20 +155,20 @@ const CartHome = () => {
 
                   <div className="flex items-center space-x-2">
                     <button
-                      className="px-2 py-1 bg-gray-300 rounded"
+                      className="px-2 py-1 bg-gray-300 rounded cursor-pointer"
                       onClick={() => handleQuantityChange(item.foodId._id, -1)}
                     >
                       -
                     </button>
                     <span>{item.quantity}</span>
                     <button
-                      className="px-2 py-1 bg-gray-300 rounded"
+                      className="px-2 py-1 bg-gray-300 rounded cursor-pointer"
                       onClick={() => handleQuantityChange(item.foodId._id, 1)}
                     >
                       +
                     </button>
                     <button
-                      className="px-2 py-1 text-white rounded"
+                      className="px-2 py-1 text-white rounded cursor-pointer"
                       onClick={() => handleRemoveFromCart(item.foodId._id)}
                     >
                       ❌
@@ -181,7 +181,7 @@ const CartHome = () => {
             {cart.length != 0 ? (
               <div>
                 <h3 className="text-lg font-bold mt-4">Total: ₹{totalPrice}</h3>
-                <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={proceedToOrder}>
+                <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded cursor-pointer" onClick={proceedToOrder}>
                   Place Order
                 </button>
               </div>)
@@ -238,13 +238,13 @@ const CartHome = () => {
               </label>
             </div>
 
-            <button className="mt-4 w-full bg-green-500 text-white p-2 rounded" onClick={handleOrderSubmit}>
+            <button className="mt-4 w-full bg-green-500 text-white p-2 rounded cursor-pointer" onClick={handleOrderSubmit}>
               Confirm Order
             </button>
           </>
         )}
 
-        <button className="mt-4 w-full bg-red-500 text-white p-2 rounded"onClick={closeCart} >
+        <button className="mt-4 w-full bg-red-500 text-white p-2 rounded cursor-pointer"onClick={closeCart} >
           Close
         </button>
       </div>

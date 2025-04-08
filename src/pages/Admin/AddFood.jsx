@@ -87,7 +87,7 @@ function AddFood() {
       <label>File:</label>
       <input type="file" name="file" ref={fileInputRef} onChange={handleFileChange} required className='border border-black' />
 
-      <button type="submit" className='border rounded-xl bg-orange-500 p-1 text-white hover:bg-orange-400 cursor-pointer'>Add Food</button>
+      <button type="submit" className='border rounded-xl bg-bgcolor p-1 text-white hover:bg-hovercolor cursor-pointer'>Add Food</button>
     </form>
   );
 }

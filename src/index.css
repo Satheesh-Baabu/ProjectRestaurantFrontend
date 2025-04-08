@@ -10,5 +10,5 @@ input[type="password"]::-ms-clear {
   
 @theme {
     --color-bgcolor: #FFC107;
-    --color-hovercolor:#ffc107e3;
+    --color-hovercolor:#fcdb03;
 }

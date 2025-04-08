@@ -159,7 +159,7 @@ function Header() {
           <FaBars />
         </button>
 
-        <h2 className="text-xl font-bold cursor-pointer text-white">MSV Restaurant</h2>
+        <h2 className="text-xl font-bold cursor-pointer text-white flex"><img src="/MSV.png" width={30} className="mx-2"/>MSV Restaurant</h2>
 
         {/* Profile Section */}
         <div className="relative " ref={profileRef}>

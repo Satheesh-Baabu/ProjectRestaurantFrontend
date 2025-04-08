@@ -24,6 +24,7 @@ import HomeSupplier from "./pages/Supplier/HomeSupplier"
 import Payment from "./pages/User/Payment";
 import ChefDashboard from "./pages/Chef/ChefDashboard";
 import CartHome from "./pages/User/CartHome";
+import ScanQR from "./pages/User/ScanQR";
 
 function App() {
 
@@ -54,6 +55,7 @@ function App() {
             <Route path="cart" element={<CartHome/>}/>
             <Route path="orders" element={<Orders/>}/> 
           </Route>
+          <Route path="/scanqr" element={<ScanQR/>}/>
           <Route path="/payment" element={<Payment/>}/> 
           <Route path="/supplier" element={<ProtectedRoute allowedRoles={["supplier"]}><HomeSupplier/></ProtectedRoute>} >
             
