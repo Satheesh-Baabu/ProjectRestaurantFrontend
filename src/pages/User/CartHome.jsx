@@ -15,6 +15,8 @@ const CartHome = () => {
   const [change, setChange] = useState(false);
   const [user, setUser] = useState(null); 
   const [cart, setCart] = useState([]);
+  const [showQRDialog, setShowQRDialog] = useState(false);
+
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -89,9 +91,21 @@ const CartHome = () => {
   };
 
   const proceedToOrder = () => {
-    setShowOrderForm(true);
-  };
+    const storedTableNumber = localStorage.getItem("tableNumber");
 
+    if (!storedTableNumber) {
+      setShowQRDialog(true); // Show QR scan dialog if no data found
+    } else if (storedTableNumber === "Takeaway") {
+      setDineOption("Takeaway");
+      setShowOrderForm(true);
+    } else if (!isNaN(storedTableNumber)) {
+      setDineOption("Dine-in");
+      setTableNumber(Number(storedTableNumber));
+      setShowOrderForm(true);
+    } else {
+      setShowQRDialog(true); // If invalid, ask to rescan QR
+    }
+  };
   const handleOrderSubmit = async () => {
     
     try {
@@ -125,6 +139,7 @@ const CartHome = () => {
         navigate("/payment", { state: { userId: user.id}});
       } else {
         await axios.delete(`${API_BASE_URL}/cart/clear/${user.id}`);
+        localStorage.removeItem("tableNumber")
         navigate("/profile/orders");
       }
     } catch (error) {
@@ -139,21 +154,28 @@ const CartHome = () => {
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        {!showOrderForm ? (
+      {showQRDialog ? (
+          <div className="text-center">
+            <h2 className="text-lg font-semibold mb-4">Scan QR Code</h2>
+            <p className="text-gray-600">Please scan a QR code to continue.</p>
+            <button className="mt-4 bg-blue-500 text-white p-2 rounded cursor-pointer" onClick={() => navigate('/scanqr')}>
+              Scan 
+            </button>
+          </div>
+        ) : !showOrderForm ? (
           <>
             <h2 className="text-xl font-semibold mb-4 text-center">Your Cart</h2>
-
             {cart.length === 0 ? (
               <p className="text-center text-gray-500">Your cart is empty</p>
             ) : (
               cart.map((item, index) => (
                 <div key={index} className="flex justify-between items-center p-2 border-b">
-                  <div>
-                    <h3 className="font-medium">{item.foodId.foodname}</h3>
-                    <p className="text-sm text-gray-600">₹{item.foodId.price * item.quantity}</p>
-                  </div>
+                   <div>
+                     <h3 className="font-medium">{item.foodId.foodname}</h3>
+                     <p className="text-sm text-gray-600">₹{item.foodId.price * item.quantity}</p>
+                   </div>
 
-                  <div className="flex items-center space-x-2">
+                   <div className="flex items-center space-x-2">
                     <button
                       className="px-2 py-1 bg-gray-300 rounded cursor-pointer"
                       onClick={() => handleQuantityChange(item.foodId._id, -1)}
@@ -177,73 +199,34 @@ const CartHome = () => {
                 </div>
               ))
             )}
-
-            {cart.length != 0 ? (
+            {cart.length !== 0 && (
               <div>
                 <h3 className="text-lg font-bold mt-4">Total: ₹{totalPrice}</h3>
-                <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded cursor-pointer" onClick={proceedToOrder}>
+                <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={proceedToOrder}>
                   Place Order
                 </button>
-              </div>)
-            :""}
+              </div>
+            )}
           </>
         ) : (
           <>
             <h2 className="text-xl font-semibold mb-4 text-center">Order Details</h2>
-            <label className="block mb-2">Dine Option:</label>
-            <div className="flex space-x-4 mb-4">
-              <label>
-                <input
-                  type="radio"
-                  value="Dine-in"
-                  checked={dineOption === "Dine-in"}
-                  onChange={() => setDineOption("Dine-in")}
-                /> Dine-In
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="Takeaway"
-                  checked={dineOption === "Takeaway"}
-                  onChange={() => setDineOption("Takeaway")}
-                /> Takeaway
-              </label>
-            </div>
-            {dineOption === "Dine-in" && (
-              <>
-                <label className="block mb-2">Table Number:</label>
-                <label
-                  className="w-full p-2 border rounded mb-4">{tableNumber} 
-                </label>
-              </>
-            )}
-
+            <p className="font-semibold">Dine Option: {dineOption}</p>
+            {dineOption === "Dine-in" && <p className="font-semibold">Table Number: {tableNumber}</p>}
             <label className="block mb-2">Payment Method:</label>
             <div className="flex space-x-4 mb-4">
               <label>
-                <input
-                  type="radio"
-                  value="Online"
-                  checked={paymentMethod === "Online"}
-                  onChange={() => setPaymentMethod("Online")}
-                /> Online Payment
+                <input type="radio" value="Online" checked={paymentMethod === "Online"} onChange={() => setPaymentMethod("Online")} /> Online
               </label>
               <label>
-                <input
-                  type="radio"
-                  value="Cash"
-                  checked={paymentMethod === "Cash"}
-                  onChange={() => setPaymentMethod("Cash")}
-                /> Cash Payment
+                <input type="radio" value="Cash" checked={paymentMethod === "Cash"} onChange={() => setPaymentMethod("Cash")} /> Cash
               </label>
             </div>
-
-            <button className="mt-4 w-full bg-green-500 text-white p-2 rounded cursor-pointer" onClick={handleOrderSubmit}>
+            <button className="mt-4 w-full bg-green-500 text-white p-2 rounded" onClick={handleOrderSubmit}>
               Confirm Order
             </button>
           </>
         )}
-
         <button className="mt-4 w-full bg-red-500 text-white p-2 rounded cursor-pointer"onClick={closeCart} >
           Close
         </button>

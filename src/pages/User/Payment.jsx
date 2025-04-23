@@ -43,6 +43,7 @@ function Payment() {
 
           if (verifyRes.data.message === "Payment verified successfully") {
             alert("Payment Successful!");
+            localStorage.removeItem("tableNumber")
             navigate("/profile/orders");
           } else {
             alert("Payment verification failed!");

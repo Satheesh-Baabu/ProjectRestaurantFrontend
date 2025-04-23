@@ -30,26 +30,26 @@
 
 
  
-//   const handleQuantityChange = async (foodId, delta) => {
-//     try {
-//       const item = cart.find((cartItem) => cartItem.foodId._id === foodId);
-//       if (!item) return;
+  // const handleQuantityChange = async (foodId, delta) => {
+  //   try {
+  //     const item = cart.find((cartItem) => cartItem.foodId._id === foodId);
+  //     if (!item) return;
 
-//       const newQuantity = item.quantity + delta;
-//       if (newQuantity < 1) return;
+  //     const newQuantity = item.quantity + delta;
+  //     if (newQuantity < 1) return;
 
-//       await axios.put(`${API_BASE_URL}/cart/update`, {
-//         userId: user.id,
-//         foodId,
-//         quantity: newQuantity,
-//       });
+  //     await axios.put(`${API_BASE_URL}/cart/update`, {
+  //       userId: user.id,
+  //       foodId,
+  //       quantity: newQuantity,
+  //     });
 
-//       const response = await axios.get(`${API_BASE_URL}/cart/${user.id}`);
-//       setCart(response.data.items || []);
-//     } catch (error) {
-//       console.error("Error updating quantity:", error);
-//     }
-//   };
+  //     const response = await axios.get(`${API_BASE_URL}/cart/${user.id}`);
+  //     setCart(response.data.items || []);
+  //   } catch (error) {
+  //     console.error("Error updating quantity:", error);
+  //   }
+  // };
 
 //   const proceedToOrder = () => {
 //     setShowOrderForm(true);
@@ -236,7 +236,7 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
     const storedTableNumber = localStorage.getItem("tableNumber");
 
     if (!storedTableNumber) {
-      setShowQRDialog(true); // Show QR scan dialog if no data found
+      setShowQRDialog(true); 
     } else if (storedTableNumber === "Takeaway") {
       setDineOption("Takeaway");
       setShowOrderForm(true);
@@ -246,6 +246,26 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
       setShowOrderForm(true);
     } else {
       setShowQRDialog(true); // If invalid, ask to rescan QR
+    }
+  };
+  const handleQuantityChange = async (foodId, delta) => {
+    try {
+      const item = cart.find((cartItem) => cartItem.foodId._id === foodId);
+      if (!item) return;
+
+      const newQuantity = item.quantity + delta;
+      if (newQuantity < 1) return;
+
+      await axios.put(`${API_BASE_URL}/cart/update`, {
+        userId: user.id,
+        foodId,
+        quantity: newQuantity,
+      });
+
+      const response = await axios.get(`${API_BASE_URL}/cart/${user.id}`);
+      setCart(response.data.items || []);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
     }
   };
 
@@ -280,6 +300,7 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
       } else {
         await axios.delete(`${API_BASE_URL}/cart/clear/${user.id}`);
         navigate("/profile/orders");
+        localStorage.removeItem("tableNumber")
       }
     } catch (error) {
       console.error("Error placing order:", error);
@@ -293,9 +314,9 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
           <div className="text-center">
             <h2 className="text-lg font-semibold mb-4">Scan QR Code</h2>
             <p className="text-gray-600">Please scan a QR code to continue.</p>
-            <button className="mt-4 bg-blue-500 text-white p-2 rounded cursor-pointer" onClick={() => navigate('/scanqr')}>
+            {/* <button className="mt-4 bg-blue-500 text-white p-2 rounded cursor-pointer" onClick={() => navigate('/scanqr')}>
               Scan 
-            </button>
+            </button> */}
           </div>
         ) : !showOrderForm ? (
           <>
@@ -305,13 +326,32 @@ const CartModal = ({ cart, setCart, onClose, handleRemoveFromCart, user }) => {
             ) : (
               cart.map((item, index) => (
                 <div key={index} className="flex justify-between items-center p-2 border-b">
-                  <div>
-                    <h3 className="font-medium">{item.foodId.foodname}</h3>
-                    <p className="text-sm text-gray-600">₹{item.foodId.price * item.quantity}</p>
+                   <div>
+                     <h3 className="font-medium">{item.foodId.foodname}</h3>
+                     <p className="text-sm text-gray-600">₹{item.foodId.price * item.quantity}</p>
+                   </div>
+
+                   <div className="flex items-center space-x-2">
+                    <button
+                      className="px-2 py-1 bg-gray-300 rounded cursor-pointer"
+                      onClick={() => handleQuantityChange(item.foodId._id, -1)}
+                    >
+                      -
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      className="px-2 py-1 bg-gray-300 rounded cursor-pointer"
+                      onClick={() => handleQuantityChange(item.foodId._id, 1)}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="px-2 py-1 text-white rounded cursor-pointer"
+                      onClick={() => handleRemoveFromCart(item.foodId._id)}
+                    >
+                      ❌
+                    </button>
                   </div>
-                  <button className="px-2 py-1 text-red-500 cursor-pointer" onClick={() => handleRemoveFromCart(item.foodId._id)}>
-                    ❌
-                  </button>
                 </div>
               ))
             )}
